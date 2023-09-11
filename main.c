@@ -7,17 +7,12 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 
-#define BUFLEN 512
+#define BUFLEN 51
 #define PORT 5300
 #define MAX_EPOLL_EVENTS 10
 
 int main(void) {
     struct sockaddr_in si_me, si_other;
-    int i, recv_len;
-    int slen = sizeof(si_other);
-
-    char buf[BUFLEN];
-    char query[BUFLEN];
 
     // create udp socket
     int s;
@@ -61,20 +56,28 @@ int main(void) {
         int n = epoll_wait(epoll_fd, events, MAX_EPOLL_EVENTS, -1);
 
         // handle events
-        for (i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             if (events[i].events & EPOLLIN) {
                 // receive the UDP packet
-                if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *)&si_other, &slen)) == -1){
+                char buf[BUFLEN];
+                int slen = sizeof(si_other);
+                int recv_len;
+                if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *)&si_other, (socklen_t*)&slen)) == -1){
                     perror("unable to receive data");
                     exit(1);
                 }
 
                 // parse and print DNS query name
                 printf("received DNS query for: %s\n", buf);
-                write(s, buf, BUFLEN);
+
+                // reply back the same request
+                // (struct sockaddr*)&si_other, slen
+                if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*)&si_other, slen) == -1){
+                    perror("unable to reply back to the client");
+                    exit(1);
+                }
             }
         }
-
     }
     close(s);
     return 0;
