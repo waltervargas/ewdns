@@ -14,6 +14,18 @@ START_TEST(test_create_udp_listener)
 }
 END_TEST
 
+START_TEST (test_create_listener_invalid_port)
+{
+    int fd = create_udp_listener(80);
+    if (fd < 0) {
+        ck_assert_int_eq(1, 1); // Success, we expect failure when running as a non-root user
+    } else {
+        // If it somehow succeeds, make sure we can close the socket
+        ck_assert_int_eq(close(fd), 0);
+    }
+}
+END_TEST
+
 Suite* suite(void)
 {
     Suite *s;
@@ -23,6 +35,7 @@ Suite* suite(void)
     tc = tcase_create("UDP");
 
     tcase_add_test(tc, test_create_udp_listener);
+    tcase_add_test(tc, test_create_listener_invalid_port);
 
     suite_add_tcase(s, tc);
 

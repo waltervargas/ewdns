@@ -22,5 +22,16 @@ if check_dep.found()
     dependencies: [check_dep]
   )
 
+  udp_test_src = [
+    'tests/udp_test.c',
+    'src/udp.c'
+  ]
+  udp_test_exec = executable(
+    'udp_test',
+    udp_test_src,
+    dependencies: [check_dep]
+  )
+
   test('utils_test', utils_test_exec)
+  test('udp_test', udp_test_exec)
 endif
