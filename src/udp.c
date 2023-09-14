@@ -7,7 +7,7 @@ int create_udp_listener(int port) {
     int listen_fd;
     struct sockaddr_in serveraddr;
 
-    listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    listen_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (listen_fd < 0) {
         return -1;
     }
@@ -17,10 +17,6 @@ int create_udp_listener(int port) {
     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if (bind(listen_fd, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0) {
-        return -1;
-    }
-
-    if (listen(listen_fd, 10) < 0) {
         return -1;
     }
 
