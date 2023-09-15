@@ -1,4 +1,8 @@
-project('dnsproxy', 'c')
+project(
+  'dnsproxy',
+  'c',
+  default_options: ['warning_level=3']
+)
 
 # Declare how to build the main project
 dnsproxy_sources = [
