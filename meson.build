@@ -1,4 +1,8 @@
-project('dnsproxy', 'c')
+project(
+  'dnsproxy',
+  'c',
+  default_options: ['warning_level=3']
+)
 
 # Declare how to build the main project
 dnsproxy_sources = [
@@ -6,6 +10,13 @@ dnsproxy_sources = [
   'src/utils.c'
 ]
 dnsproxy_exec = executable('dnsproxy', dnsproxy_sources)
+
+# DNS Echo
+dnsecho_sources = [
+  'src/udp.c',
+  'src/dnsecho.c'
+]
+dnsecho_exec = executable('dnsecho', dnsecho_sources)
 
 # Declare project dependencies here, for example:
 check_dep = dependency('check')

@@ -1,6 +1,9 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 // Create a listening socket
 int create_udp_listener(int port) {
@@ -21,4 +24,22 @@ int create_udp_listener(int port) {
     }
 
     return listen_fd;
+}
+
+int udp_echo(int socket, char* buf, size_t buflen){
+    struct sockaddr_in caddr; // client addres
+    socklen_t caddrlen = sizeof(caddr);
+    memset((char *)&caddr, 0, caddrlen);
+
+    int recv_len;
+    if ((recv_len = recvfrom(socket, buf, buflen, 0, (struct sockaddr *)&caddr, &caddrlen)) == -1) {
+        return -1;
+    }
+
+    int sent_len;
+    if ((sent_len = sendto(socket, buf, buflen, 0, (struct sockaddr*)&caddr, caddrlen)) == -1){
+         return -1;
+    }
+
+    return sent_len;
 }
