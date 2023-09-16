@@ -34,7 +34,7 @@ int send_via_udp(int port, const char* buf, size_t buflen){
     client_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     int client_fd = socket(AF_INET, SOCK_DGRAM, 0);
 
-    size_t len;
+    int len;
     if ((len = sendto(client_fd, buf, buflen, 0,
                 (struct sockaddr*)&client_addr, sizeof(client_addr))) == -1){
         return -1;

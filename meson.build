@@ -11,6 +11,13 @@ dnsproxy_sources = [
 ]
 dnsproxy_exec = executable('dnsproxy', dnsproxy_sources)
 
+# DNS Echo
+dnsecho_sources = [
+  'src/udp.c',
+  'src/dnsecho.c'
+]
+dnsecho_exec = executable('dnsecho', dnsecho_sources)
+
 # Declare project dependencies here, for example:
 check_dep = dependency('check')
 
