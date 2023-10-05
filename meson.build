@@ -14,7 +14,8 @@ dnsproxy_exec = executable('dnsproxy', dnsproxy_sources)
 # DNS Echo
 dnsecho_sources = [
   'src/udp.c',
-  'src/dnsecho.c'
+  'src/dnsecho.c',
+  'src/epoll.c'
 ]
 dnsecho_exec = executable('dnsecho', dnsecho_sources)
 

@@ -2,26 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/epoll.h>
+#include "epoll.h"
 
-int epoll_setup_in(const int socket){
-    int epoll_fd;
-
-    // create epoll instance
-    epoll_fd = epoll_create1(0);
-    if (epoll_fd == -1) {
-        return epoll_fd;
-    }
-
-    struct epoll_event event;
-    event.events =  EPOLLIN; // we are interested in read events
-    event.data.fd = socket;
-
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket, &event) == -1) {
-        return -1;
-    }
-    return epoll_fd;
-}
-
+#define BUFF_SIZE 51
 
 int main(void){
     int fd = create_udp_listener(5301);
@@ -36,8 +19,8 @@ int main(void){
 
         // handle events
         for (int i = 0; i < n; i++) {
-            char buf[51];
-            if (udp_echo(fd, buf, 51) == -1){
+            char buf[BUFF_SIZE];
+            if (udp_echo(fd, buf, BUFF_SIZE) == -1){
                 perror("unable to echo UDP message");
                 exit(1);
             }
