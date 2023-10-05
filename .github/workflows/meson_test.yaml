@@ -24,3 +24,21 @@ jobs:
 
     - name: Coverage report
       run: ninja coverage-text -C build && cat build/meson-logs/coverage.txt
+
+    - name: Post Coverage Comment to PR
+      run: |
+        echo 'Coverage Report' > coverage-comment.md
+        cat build/meson-logs/coverage.txt >> coverage-comment.md
+        comment="$(cat coverage-comment.md)"
+        comment="${comment//'%'/'%25'}"
+        comment="${comment//$'\n'/'%0A'}"
+        comment="${comment//$'\r'/'%0D'}"
+
+        echo "Comment: $comment"
+
+        curl -s \
+             -X POST \
+             -H "Authorization: token ${{ github.token }}" \
+             -H "Accept: application/vnd.github.v3+json" \
+             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+             -d "{\"body\": \"$comment\"}"
