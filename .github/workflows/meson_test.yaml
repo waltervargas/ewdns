@@ -1,0 +1,44 @@
+name: Meson Test
+
+on:
+  pull_request:
+    branches:
+      - main # or whatever your default branch is called
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: sudo apt-get update && sudo apt-get install -y meson ninja-build gcc check gcovr
+
+    - name: Configure
+      run: rm -rf build/ && meson setup build -Db_coverage=true
+
+    - name: Run tests
+      run: meson test -C build -v
+
+    - name: Coverage report
+      run: ninja coverage-text -C build && cat build/meson-logs/coverage.txt
+
+    - name: Post Coverage Comment to PR
+      run: |
+        echo 'Coverage Report' > coverage-comment.md
+        cat build/meson-logs/coverage.txt >> coverage-comment.md
+        comment="$(cat coverage-comment.md)"
+        comment="${comment//'%'/'%25'}"
+        comment="${comment//$'\n'/'%0A'}"
+        comment="${comment//$'\r'/'%0D'}"
+
+        echo "Comment: $comment"
+
+        curl -s \
+             -X POST \
+             -H "Authorization: token ${{ github.token }}" \
+             -H "Accept: application/vnd.github.v3+json" \
+             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+             -d "{\"body\": \"$comment\"}"
