@@ -17,7 +17,10 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y meson ninja-build gcc check
 
     - name: Configure
-      run: meson setup build
+      run: meson setup build -Db_coverage=true
 
     - name: Run tests
       run: meson test -C build -v
+
+    - name: Coverage report
+      run: ninja coverage-text -C build && cat build/meson-logs/coverage.txt
