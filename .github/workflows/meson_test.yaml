@@ -1,0 +1,23 @@
+name: Meson Test
+
+on:
+  pull_request:
+    branches:
+      - main # or whatever your default branch is called
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: sudo apt-get update && sudo apt-get install -y meson ninja-build gcc check
+
+    - name: Configure
+      run: meson setup build
+
+    - name: Run tests
+      run: meson test -C build -v
